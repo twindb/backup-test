@@ -26,8 +26,10 @@ RUN \
     /bin/chmod 700 /root/.ssh/ ; \
     /usr/sbin/sshd
 
-ADD --chown=root:root id_rsa.pub /root/.ssh/authorized_keys
-RUN /bin/chmod 600 /root/.ssh/authorized_keys
+COPY id_rsa.pub /root/.ssh/authorized_keys
+RUN \
+    /bin/chmod 600 /root/.ssh/authorized_keys ; \
+    /bin/chown root:root /root/.ssh/authorized_keys
 
 # Install/start MySQL
 ADD my-master-legacy.cnf /etc/my.cnf
