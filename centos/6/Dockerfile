@@ -15,7 +15,8 @@ RUN \
     mysql-community-client \
     openssh-server \
     nc \
-    sudo
+    sudo \
+    git
 
 # Install/start sshd
 RUN \
