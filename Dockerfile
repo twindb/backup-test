@@ -7,7 +7,8 @@ EXPOSE 3306
 RUN \
     apt-get update; \
     apt-get -y install curl lsb-release wget netcat sudo \
-        openssh-client openssh-server
+        openssh-client openssh-server \
+        python
 
 # Install Oracle Repo
 RUN mysql_repo=mysql-apt-config_0.8.9-1_all.deb ; \
