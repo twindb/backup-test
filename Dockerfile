@@ -1,4 +1,4 @@
-FROM ubuntu:trusty
+FROM ubuntu:xenial
 LABEL maintainer="TwinDB Development Team <dev@twindb.com>"
 EXPOSE 22
 EXPOSE 3306
