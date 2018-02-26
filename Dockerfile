@@ -1,4 +1,4 @@
-FROM centos:centos6
+FROM centos:centos7
 LABEL maintainer="TwinDB Development Team <dev@twindb.com>"
 EXPOSE 22
 EXPOSE 3306
@@ -7,7 +7,7 @@ EXPOSE 3306
 RUN \
     yum clean all ; \
     yum -y install epel-release ; \
-    yum -y install "https://dev.mysql.com/get/mysql57-community-release-el6-11.noarch.rpm"
+    yum -y install "https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm"
 
 RUN \
     yum -y install \
@@ -15,8 +15,7 @@ RUN \
     mysql-community-client \
     openssh-server \
     nc \
-    sudo \
-    git
+    sudo
 
 # Install/start sshd
 RUN \
