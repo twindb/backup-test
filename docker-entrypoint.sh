@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 DATADIR="/var/lib/mysql"
 
-mysqld --initialize-insecure
+rm -rf ${DATADIR}
+mkdir -p ${DATADIR}
+
+mysqld --initialize-insecure --user=root
 /bin/chown -R mysql:mysql "${DATADIR}" /var/run/mysqld
 /bin/chown 777 /var/run/mysqld
 
-exec mysqld
+exec mysqld --user=root
