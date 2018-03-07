@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-DATADIR="/var/lib/mysql"
 
-mysqld --initialize-insecure
-/bin/chown -R mysql:mysql "${DATADIR}" /var/run/mysqld
-/bin/chown 777 /var/run/mysqld
+function clean_datadir() {
+    /bin/rm -rf /var/lib/mysql/*
+}
 
-exec mysqld
+clean_datadir
+exec /usr/sbin/sshd -D
