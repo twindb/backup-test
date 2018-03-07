@@ -16,6 +16,9 @@ RUN mysql_repo=mysql-apt-config_0.8.9-1_all.deb ; \
     DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/${mysql_repo} ; \
     apt-get update
 
+# Clean datadir
+RUN \
+    /bin/rm -rf /var/lib/mysql/*
 
 # Install/start sshd
 RUN \
@@ -40,4 +43,4 @@ COPY docker-entrypoint.sh /usr/local/bin/
 RUN /bin/chmod 755 /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
-CMD ["mysqld", "--user=root"]
+CMD ["usr/sbin/sshd", "-D"]
