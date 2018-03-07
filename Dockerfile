@@ -28,7 +28,7 @@ RUN \
     /usr/bin/ssh-keygen -t dsa -f /etc/ssh/ssh_host_dsa_key -P "" ; \
     mkdir -p /root/.ssh/ ; \
     /bin/chown root:root /root/.ssh ; \
-    /bin/chmod 700 /root/.ssh/ ; \
+    /bin/chmod 700 /root/.ssh/ ;
 
 COPY id_rsa.pub /root/.ssh/authorized_keys
 RUN \
