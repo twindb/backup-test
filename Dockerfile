@@ -42,4 +42,4 @@ COPY docker-entrypoint.sh /usr/local/bin/
 RUN /bin/chmod 755 /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
-CMD ["usr/sbin/sshd -D"]
+CMD ["usr/sbin/sshd", "-D"]
