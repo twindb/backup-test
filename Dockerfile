@@ -18,6 +18,10 @@ RUN \
     sudo \
     git
 
+# Clean datadir
+RUN \
+    /bin/rm -rf /var/lib/mysql/*
+
 # Install/start sshd
 RUN \
     /usr/bin/ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key -P "" ; \
@@ -25,7 +29,6 @@ RUN \
     mkdir -p /root/.ssh/ ; \
     /bin/chown root:root /root/.ssh ; \
     /bin/chmod 700 /root/.ssh/ ; \
-    /usr/sbin/sshd
 
 COPY id_rsa.pub /root/.ssh/authorized_keys
 RUN \
@@ -39,4 +42,4 @@ COPY docker-entrypoint.sh /usr/local/bin/
 RUN /bin/chmod 755 /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
-CMD ["mysqld"]
+CMD ["usr/sbin/sshd -D"]
