@@ -14,7 +14,7 @@ RUN \
     mysql-community-server \
     mysql-community-client \
     openssh-server \
-    nc \
+    nmap \
     sudo
 
 # Install/start sshd
