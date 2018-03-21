@@ -6,7 +6,7 @@ EXPOSE 3306
 # Install packages
 RUN \
     apt-get update; \
-    apt-get -y install curl lsb-release wget netcat sudo \
+    apt-get -y install curl lsb-release wget nmap sudo \
         openssh-client openssh-server \
         python
 
