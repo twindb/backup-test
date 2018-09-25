@@ -8,7 +8,8 @@ RUN \
     apt-get update; \
     apt-get -y install curl lsb-release wget nmap sudo net-tools \
         openssh-client openssh-server \
-        python
+        python \
+        gnupg
 
 # Install Oracle Repo
 RUN mysql_repo=mysql-apt-config_0.8.9-1_all.deb ; \
