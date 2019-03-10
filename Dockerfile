@@ -1,4 +1,4 @@
-FROM debian:jessie
+FROM debian:stretch
 LABEL maintainer="TwinDB Development Team <dev@twindb.com>"
 EXPOSE 22
 EXPOSE 3306
