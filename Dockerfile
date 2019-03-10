@@ -3,6 +3,8 @@ LABEL maintainer="TwinDB Development Team <dev@twindb.com>"
 EXPOSE 22
 EXPOSE 3306
 
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+
 # Install packages
 RUN \
     apt-get update; \
