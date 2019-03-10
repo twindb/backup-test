@@ -7,10 +7,10 @@ EXPOSE 3306
 RUN \
     apt-get update; \
     apt-get -y install curl lsb-release wget nmap sudo net-tools \
-        openssh-client openssh-server
+        openssh-client openssh-server gnupg
 
 # Install Oracle Repo
-RUN mysql_repo=mysql-apt-config_0.8.9-1_all.deb ; \
+RUN mysql_repo=mysql-apt-config_0.8.12-1_all.deb ; \
     curl --location https://dev.mysql.com/get/${mysql_repo} > /tmp/${mysql_repo} ; \
     DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/${mysql_repo} ; \
     apt-get update
