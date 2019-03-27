@@ -12,7 +12,7 @@ RUN \
         gnupg
 
 # Install Oracle Repo
-RUN mysql_repo=mysql-apt-config_0.8.9-1_all.deb ; \
+RUN mysql_repo=mysql-apt-config_0.8.12-1_all.deb ; \
     curl --location https://dev.mysql.com/get/${mysql_repo} > /tmp/${mysql_repo} ; \
     DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/${mysql_repo} ; \
     apt-get update
