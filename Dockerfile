@@ -1,4 +1,4 @@
-FROM ubuntu:cosmic
+FROM ubuntu:bionic
 LABEL maintainer="TwinDB Development Team <dev@twindb.com>"
 EXPOSE 22
 EXPOSE 3306
