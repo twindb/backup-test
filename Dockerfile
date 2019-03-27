@@ -3,6 +3,8 @@ LABEL maintainer="TwinDB Development Team <dev@twindb.com>"
 EXPOSE 22
 EXPOSE 3306
 
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+
 # Install packages
 RUN \
     apt-get update; \
@@ -14,6 +16,7 @@ RUN \
 # Install Oracle Repo
 RUN mysql_repo=mysql-apt-config_0.8.12-1_all.deb ; \
     curl --location https://dev.mysql.com/get/${mysql_repo} > /tmp/${mysql_repo} ; \
+    debconf-set-selections <<< "mysql-apt-config    mysql-apt-config/select-server    select    mysql-5.7" ; \
     DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/${mysql_repo} ; \
     apt-get update
 
