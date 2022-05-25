@@ -15,18 +15,13 @@ export PRINT_HELP_PYSCRIPT
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
-.PHONY: check_tag
-check_tag:
-	@test -n "$$TAG" || (echo "TAG env variable must be something \
-	like twindb/backup-test:focal or twindb/backup-test:slave_focal"; exit 1 )
-
 .PHONY: build
-build:  check_tag ## Build image.
+build: ## Build image.
 	@echo "Building image tagged as $$TAG"
-	docker build -t "$$TAG" .
+	docker build -t "twindb/backup-test:$$(git branch --no-color --show-current)" .
 
 
 .PHONY: publish
-publish:  check_tag ## Publish image to hub.docker.com
+publish: ## Publish image to hub.docker.com
 	@echo "Publishing image tagged as $$TAG"
-	docker push "$$TAG"
+	docker push "twindb/backup-test:$$(git branch --no-color --show-current)"
