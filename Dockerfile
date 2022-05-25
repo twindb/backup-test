@@ -1,49 +1,65 @@
-FROM ubuntu:bionic
+FROM ubuntu:focal
 LABEL maintainer="TwinDB Development Team <dev@twindb.com>"
 EXPOSE 22
 EXPOSE 3306
 
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+# Install OS dependencies
+RUN apt-get update; \
+    DEBIAN_FRONTEND=noninteractive apt-get -y install  \
+    gnupg2 \
+    curl \
+    debconf \
+    adduser \
+    libc6 libgcc-s1 libgssapi-krb5-2 libkrb5-3 libsasl2-2 libssl1.1 libstdc++6 libudev1 \
+    perl psmisc \
+    libaio1 libmecab2 libnuma1 \
+    libdbd-mysql-perl libcurl4-openssl-dev rsync libev4 \
+    openssh-server; \
+    apt-get clean
 
-# Install packages
-RUN \
-    apt-get update; \
-    apt-get -y install curl lsb-release wget nmap sudo net-tools \
-        openssh-client openssh-server \
-        python \
-        gnupg
+# Install MySQL server
+RUN for p in \
+      mysql-common_8.0.28-1ubuntu20.04_amd64.deb \
+    mysql-community-client-plugins_8.0.28-1ubuntu20.04_amd64.deb \
+    mysql-community-client-core_8.0.28-1ubuntu20.04_amd64.deb \
+    mysql-community-client_8.0.28-1ubuntu20.04_amd64.deb \
+    mysql-client_8.0.28-1ubuntu20.04_amd64.deb \
+    mysql-community-server-core_8.0.28-1ubuntu20.04_amd64.deb \
+    mysql-community-server_8.0.28-1ubuntu20.04_amd64.deb \
+    libmysqlclient21_8.0.28-1ubuntu20.04_amd64.deb \
+    ; do \
+    curl -Ls https://downloads.mysql.com/archives/get/p/23/file/$p > /tmp/$p; \
+    DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/$p; \
+    rm /tmp/$p; \
+    done
 
-# Install Oracle Repo
-RUN mysql_repo=mysql-apt-config_0.8.12-1_all.deb ; \
-    curl --location https://dev.mysql.com/get/${mysql_repo} > /tmp/${mysql_repo} ; \
-    debconf-set-selections <<< "mysql-apt-config    mysql-apt-config/select-server    select    mysql-5.7" ; \
-    DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/${mysql_repo} ; \
-    apt-get update
+# Install Xtrabackup
+RUN p=percona-xtrabackup-80_8.0.28-20-1.focal_amd64.deb ;\
+    curl -Ls https://downloads.percona.com/downloads/Percona-XtraBackup-LATEST/Percona-XtraBackup-8.0.28-20/binary/debian/focal/x86_64/$p > /tmp/$p ; \
+    dpkg -i /tmp/$p; \
+    rm /tmp/$p
 
 # Clean datadir
 RUN \
     /bin/rm -rf /var/lib/mysql/*
 
-# Install/start sshd
+# Install sshd
 RUN \
     mkdir /var/run/sshd ; \
     mkdir -p /root/.ssh/ ; \
     /bin/chown root:root /root/.ssh ; \
-    /bin/chmod 700 /root/.ssh/ ; \
-    /usr/sbin/sshd
-
+    /bin/chmod 700 /root/.ssh/
+#
 COPY id_rsa.pub /root/.ssh/authorized_keys
 RUN \
     /bin/chmod 600 /root/.ssh/authorized_keys ; \
     /bin/chown root:root /root/.ssh/authorized_keys
 
-# Install/start MySQL
-RUN DEBIAN_FRONTEND=noninteractive \
-    apt-get -y install mysql-community-server mysql-community-client
+RUN ln -s /usr/bin/python3 /usr/bin/python
 
 COPY my-master-legacy.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
-
 COPY docker-entrypoint.sh /usr/local/bin/
+
 RUN /bin/chmod 755 /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
