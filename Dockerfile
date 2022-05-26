@@ -4,40 +4,58 @@ EXPOSE 22
 EXPOSE 3306
 
 # Install packages
-RUN \
-    apt-get update; \
-    apt-get -y install curl lsb-release wget nmap sudo \
-        openssh-client openssh-server \
-        python \
-        gnupg
+# Install OS dependencies
+RUN apt-get update; \
+    DEBIAN_FRONTEND=noninteractive apt-get -y install  \
+    gnupg2 \
+    curl \
+    debconf \
+    adduser \
+    libc6 libgssapi-krb5-2 libkrb5-3 libsasl2-2 libssl1.1 libudev1 \
+    perl psmisc \
+    libaio1 libmecab2 libnuma1 \
+    libdbd-mysql-perl libcurl4-openssl-dev rsync libev4 \
+    openssh-server; \
+    apt-get clean
 
-# Install Oracle Repo
-RUN mysql_repo=mysql-apt-config_0.8.9-1_all.deb ; \
-    curl --location https://dev.mysql.com/get/${mysql_repo} > /tmp/${mysql_repo} ; \
-    DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/${mysql_repo} ; \
-    apt-get update
+## Install MySQL server
+RUN for p in \
+    mysql-common_5.7.37-1ubuntu18.04_amd64.deb \
+    mysql-community-client_5.7.37-1ubuntu18.04_amd64.deb  \
+    mysql-client_5.7.37-1ubuntu18.04_amd64.deb \
+    mysql-community-server_5.7.37-1ubuntu18.04_amd64.deb \
+    mysql-server_5.7.37-1ubuntu18.04_amd64.deb \
+    libmysqlclient20_5.7.37-1ubuntu18.04_amd64.deb \
+    libmysqlclient-dev_5.7.37-1ubuntu18.04_amd64.deb \
+    ; do \
+    curl -Ls https://downloads.mysql.com/archives/get/p/23/file/$p > /tmp/$p; \
+    DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/$p; \
+    rm /tmp/$p; \
+    done
 
+# Install Xtrabackup
+RUN p=percona-xtrabackup-24_2.4.26-1.bionic_amd64.deb ;\
+    curl -Ls https://downloads.percona.com/downloads/Percona-XtraBackup-2.4/Percona-XtraBackup-2.4.26/binary/debian/bionic/x86_64/$p > /tmp/$p ; \
+    dpkg -i /tmp/$p; \
+    rm /tmp/$p
 
 # Install/start sshd
 RUN \
     mkdir /var/run/sshd ; \
     mkdir -p /root/.ssh/ ; \
     /bin/chown root:root /root/.ssh ; \
-    /bin/chmod 700 /root/.ssh/ ; \
-    /usr/sbin/sshd
+    /bin/chmod 700 /root/.ssh
 
 COPY id_rsa.pub /root/.ssh/authorized_keys
 RUN \
     /bin/chmod 600 /root/.ssh/authorized_keys ; \
     /bin/chown root:root /root/.ssh/authorized_keys
 
-# Install/start MySQL
-RUN DEBIAN_FRONTEND=noninteractive \
-    apt-get -y install mysql-community-server mysql-community-client
-
 COPY my-master-legacy.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
 
 COPY docker-entrypoint.sh /usr/local/bin/
+RUN ln -s /usr/bin/python3 /usr/bin/python
+
 RUN /bin/chmod 755 /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
