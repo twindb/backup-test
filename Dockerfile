@@ -54,10 +54,11 @@ RUN \
     /bin/chmod 600 /root/.ssh/authorized_keys ; \
     /bin/chown root:root /root/.ssh/authorized_keys
 
+RUN ln -s /usr/bin/python3 /usr/bin/python
 
 COPY my-master-legacy.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
-
 COPY docker-entrypoint.sh /usr/local/bin/
+
 RUN /bin/chmod 755 /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
