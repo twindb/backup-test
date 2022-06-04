@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 DATADIR="/var/lib/mysql"
+RUNDIR="/run/mysqld"
 
-rm -rf ${DATADIR}
-mkdir -p ${DATADIR}
+for d in ${DATADIR} ${RUNDIR}
+do
+    rm -rf $d
+    mkdir -p $d
+    /bin/chown -R mysql:mysql $d
+done
 
-mysqld --initialize-insecure --user=root
-/bin/chown -R mysql:mysql "${DATADIR}" /var/run/mysqld
-/bin/chmod 777 /var/run/mysqld
+/usr/bin/mysql_install_db --user=mysql
+mysqld --initialize-insecure
 /usr/sbin/sshd
 
-exec mysqld --user=root
+exec /usr/sbin/mysqld
