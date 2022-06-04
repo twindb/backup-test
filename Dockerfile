@@ -6,16 +6,22 @@ EXPOSE 3306
 # Install packages
 RUN \
     yum clean all ; \
-    yum -y install epel-release ; \
-    yum -y install "https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm"
-
-RUN \
+    yum -y install  \
+        epel-release ; \
     yum -y install \
-    mysql-community-server \
-    mysql-community-client \
-    openssh-server \
-    nmap \
-    sudo
+        https://downloads.mysql.com/archives/get/p/23/file/mysql-community-common-5.7.37-1.el7.x86_64.rpm \
+        https://downloads.mysql.com/archives/get/p/23/file/mysql-community-libs-5.7.37-1.el7.x86_64.rpm \
+        https://downloads.mysql.com/archives/get/p/23/file/mysql-community-libs-compat-5.7.37-1.el7.x86_64.rpm \
+        https://downloads.mysql.com/archives/get/p/23/file/mysql-community-server-5.7.37-1.el7.x86_64.rpm \
+        https://downloads.mysql.com/archives/get/p/23/file/mysql-community-client-5.7.37-1.el7.x86_64.rpm \
+        openssh-server \
+        nmap \
+        sudo \
+        https://downloads.percona.com/downloads/Percona-XtraBackup-2.4/Percona-XtraBackup-2.4.26/binary/redhat/7/x86_64/percona-xtrabackup-24-2.4.26-1.el7.x86_64.rpm ; \
+    yum clean all ; \
+    rm -rf /var/cache/yum ; \
+    strip /usr/sbin/mysqld ; \
+    strip /usr/sbin/mysqld-debug
 
 # Clean datadir
 RUN \
@@ -27,8 +33,7 @@ RUN \
     /usr/bin/ssh-keygen -t dsa -f /etc/ssh/ssh_host_dsa_key -P "" ; \
     mkdir -p /root/.ssh/ ; \
     /bin/chown root:root /root/.ssh ; \
-    /bin/chmod 700 /root/.ssh/ ; \
-    /usr/sbin/sshd
+    /bin/chmod 700 /root/.ssh
 
 COPY id_rsa.pub /root/.ssh/authorized_keys
 RUN \
@@ -42,4 +47,4 @@ COPY docker-entrypoint.sh /usr/local/bin/
 RUN /bin/chmod 755 /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
-CMD ["usr/sbin/sshd", "-D"]
+CMD ["/usr/sbin/sshd", "-D"]
