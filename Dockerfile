@@ -17,27 +17,12 @@ RUN apt-get update; \
     openssh-server; \
     apt-get clean
 
-# Install MySQL server
-RUN for p in \
-      mysql-common_8.0.28-1ubuntu20.04_amd64.deb \
-    mysql-community-client-plugins_8.0.28-1ubuntu20.04_amd64.deb \
-    mysql-community-client-core_8.0.28-1ubuntu20.04_amd64.deb \
-    mysql-community-client_8.0.28-1ubuntu20.04_amd64.deb \
-    mysql-client_8.0.28-1ubuntu20.04_amd64.deb \
-    mysql-community-server-core_8.0.28-1ubuntu20.04_amd64.deb \
-    mysql-community-server_8.0.28-1ubuntu20.04_amd64.deb \
-    libmysqlclient21_8.0.28-1ubuntu20.04_amd64.deb \
-    ; do \
-    curl -Ls https://downloads.mysql.com/archives/get/p/23/file/$p > /tmp/$p; \
-    DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/$p; \
-    rm /tmp/$p; \
-    done
-
-# Install Xtrabackup
-RUN p=percona-xtrabackup-80_8.0.28-20-1.focal_amd64.deb ;\
-    curl -Ls https://downloads.percona.com/downloads/Percona-XtraBackup-LATEST/Percona-XtraBackup-8.0.28-20/binary/debian/focal/x86_64/$p > /tmp/$p ; \
-    dpkg -i /tmp/$p; \
-    rm /tmp/$p
+## Install MariaDB server and mariadb-backup
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install \
+    mariadb-server \
+    mariadb-client \
+    mariadb-backup; \
+    apt-get clean
 
 # Clean datadir
 RUN \
@@ -57,7 +42,7 @@ RUN \
 
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
-COPY my-master-legacy.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
+COPY my-master-legacy.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
 COPY docker-entrypoint.sh /usr/local/bin/
 
 RUN /bin/chmod 755 /usr/local/bin/docker-entrypoint.sh
