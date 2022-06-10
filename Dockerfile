@@ -2,6 +2,7 @@ FROM ubuntu:focal
 LABEL maintainer="TwinDB Development Team <dev@twindb.com>"
 EXPOSE 22
 EXPOSE 3306
+ENV container docker
 
 # Install OS dependencies
 RUN apt-get update; \
@@ -25,8 +26,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -y install \
     apt-get clean
 
 # Clean datadir
-RUN \
-    /bin/rm -rf /var/lib/mysql/*
+RUN /bin/rm -rf /var/lib/mysql/*
 
 # Install sshd
 RUN \
@@ -43,9 +43,10 @@ RUN \
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
 COPY my-master-legacy.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
-COPY docker-entrypoint.sh /usr/local/bin/
 
-RUN /bin/chmod 755 /usr/local/bin/docker-entrypoint.sh
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+RUN systemctl set-default multi-user.target
+RUN systemctl mask dev-hugepages.mount sys-fs-fuse-connections.mount
 
-CMD ["usr/sbin/sshd", "-D"]
+STOPSIGNAL SIGRTMIN+3
+
+CMD ["/bin/bash", "-c", "exec /sbin/init --log-target=journal 3>&1"]
