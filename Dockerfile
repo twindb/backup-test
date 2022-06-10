@@ -2,6 +2,7 @@ FROM ubuntu:focal
 LABEL maintainer="TwinDB Development Team <dev@twindb.com>"
 EXPOSE 22
 EXPOSE 3306
+ENV container docker
 
 # Install OS dependencies
 RUN apt-get update; \
@@ -54,10 +55,11 @@ RUN \
 
 COPY my-master-legacy.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
 
-COPY docker-entrypoint.sh /usr/local/bin/
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
-RUN /bin/chmod 755 /usr/local/bin/docker-entrypoint.sh
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+RUN systemctl set-default multi-user.target
+RUN systemctl mask dev-hugepages.mount sys-fs-fuse-connections.mount
 
-CMD ["mysqld", "--user=root"]
+STOPSIGNAL SIGRTMIN+3
+
+CMD ["/bin/bash", "-c", "exec /sbin/init --log-target=journal 3>&1"]

@@ -11,17 +11,19 @@ for line in sys.stdin:
 endef
 export PRINT_HELP_PYSCRIPT
 
+TAG = "twindb/backup-test:$(shell git branch --no-color --show-current)"
 .PHONY: help
 help:
+	@echo "Image will be tagged as $(TAG)\n"
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
 .PHONY: build
 build: ## Build image.
-	@echo "Building image tagged as $$TAG"
-	docker build -t "twindb/backup-test:$$(git branch --no-color --show-current)" .
+	@echo "Building image tagged as $(TAG)"
+	docker build -t $(TAG) .
 
 
 .PHONY: publish
-publish: ## Publish image to hub.docker.com
-	@echo "Publishing image tagged as $$TAG"
-	docker push "twindb/backup-test:$$(git branch --no-color --show-current)"
+publish: ## Publish image to hub.docker.com.
+	@echo "Publishing image tagged as $(TAG)"
+	docker push $(TAG)
