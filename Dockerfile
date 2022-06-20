@@ -2,6 +2,7 @@ FROM centos:centos7
 LABEL maintainer="TwinDB Development Team <dev@twindb.com>"
 EXPOSE 22
 EXPOSE 3306
+ENV container docker
 
 # Install packages
 RUN \
@@ -19,9 +20,11 @@ RUN \
         sudo \
         https://downloads.percona.com/downloads/Percona-XtraBackup-2.4/Percona-XtraBackup-2.4.26/binary/redhat/7/x86_64/percona-xtrabackup-24-2.4.26-1.el7.x86_64.rpm ; \
     yum clean all ; \
-    rm -rf /var/cache/yum ; \
-    strip /usr/sbin/mysqld ; \
-    strip /usr/sbin/mysqld-debug
+    rm -rf /var/cache/yum ; rm -rf /var/tmp/yum-*
+
+# Strip binaries
+RUN strip /usr/sbin/mysqld ; strip /usr/sbin/mysqld-debug
+RUN ls /usr/bin/mysql* | grep -v -e mysqld_pre_systemd -e mysqldumpslow | xargs strip
 
 # Clean datadir
 RUN \
@@ -43,8 +46,9 @@ RUN \
 # Install/start MySQL
 ADD my-master-legacy.cnf /etc/my.cnf
 
-COPY docker-entrypoint.sh /usr/local/bin/
-RUN /bin/chmod 755 /usr/local/bin/docker-entrypoint.sh
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+RUN systemctl set-default multi-user.target
+RUN systemctl mask dev-hugepages.mount sys-fs-fuse-connections.mount
 
-CMD ["/usr/sbin/sshd", "-D"]
+STOPSIGNAL SIGRTMIN+3
+
+CMD ["/bin/bash", "-c", "exec /sbin/init --log-target=journal 3>&1"]
