@@ -1,44 +1,34 @@
-FROM ubuntu:focal
+FROM ubuntu:jammy
 LABEL maintainer="TwinDB Development Team <dev@twindb.com>"
 EXPOSE 22
 EXPOSE 3306
 ENV container docker
 
+# Install packages
 # Install OS dependencies
+## Install MySQL server
 RUN apt-get update; \
     DEBIAN_FRONTEND=noninteractive apt-get -y install  \
     gnupg2 \
     curl \
     debconf \
     adduser \
-    libc6 libgcc-s1 libgssapi-krb5-2 libkrb5-3 libsasl2-2 libssl1.1 libstdc++6 libudev1 \
+    libc6 libgssapi-krb5-2 libkrb5-3 libsasl2-2 libudev1 \
     perl psmisc \
     libaio1 libmecab2 libnuma1 \
     libdbd-mysql-perl libcurl4-openssl-dev rsync libev4 \
-    openssh-server; \
+    openssh-server \
+    zstd \
+    ncat \
+    mysql-server mysql-client ; \
     apt-get clean
 
-# Install MySQL server
-RUN for p in \
-      mysql-common_8.0.28-1ubuntu20.04_amd64.deb \
-    mysql-community-client-plugins_8.0.28-1ubuntu20.04_amd64.deb \
-    mysql-community-client-core_8.0.28-1ubuntu20.04_amd64.deb \
-    mysql-community-client_8.0.28-1ubuntu20.04_amd64.deb \
-    mysql-client_8.0.28-1ubuntu20.04_amd64.deb \
-    mysql-community-server-core_8.0.28-1ubuntu20.04_amd64.deb \
-    mysql-community-server_8.0.28-1ubuntu20.04_amd64.deb \
-    libmysqlclient21_8.0.28-1ubuntu20.04_amd64.deb \
-    ; do \
-    curl -Ls https://downloads.mysql.com/archives/get/p/23/file/$p > /tmp/$p; \
-    DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/$p; \
-    rm /tmp/$p; \
-    done
-
 # Install Xtrabackup
-RUN p=percona-xtrabackup-80_8.0.28-20-1.focal_amd64.deb ;\
-    curl -Ls https://downloads.percona.com/downloads/Percona-XtraBackup-LATEST/Percona-XtraBackup-8.0.28-20/binary/debian/focal/x86_64/$p > /tmp/$p ; \
+RUN p=percona-xtrabackup-80_8.0.34-29-1.jammy_amd64.deb ;\
+    curl -Ls https://downloads.percona.com/downloads/Percona-XtraBackup-8.0/Percona-XtraBackup-8.0.34-29/binary/debian/jammy/x86_64/$p > /tmp/$p ; \
     dpkg -i /tmp/$p; \
     rm /tmp/$p
+
 
 # Clean datadir
 RUN \
