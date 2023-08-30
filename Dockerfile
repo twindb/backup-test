@@ -19,6 +19,7 @@ RUN apt-get update; \
     libdbd-mysql-perl libcurl4-openssl-dev rsync libev4 \
     openssh-server \
     zstd \
+    ncat \
     mysql-server mysql-client ; \
     apt-get clean
 
