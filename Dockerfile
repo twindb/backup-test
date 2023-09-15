@@ -46,6 +46,7 @@ RUN \
 
 # Install/start MySQL
 ADD my-master-legacy.cnf /etc/my.cnf
+RUN chmod 644 /etc/my.cnf
 
 RUN curl https://copr.fedorainfracloud.org/coprs/jsynacek/systemd-backports-for-centos-7/repo/epel-7/jsynacek-systemd-backports-for-centos-7-epel-7.repo > /etc/yum.repos.d/jsynacek-systemd-centos-7.repo ; \
     yum -y update systemd
