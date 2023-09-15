@@ -18,6 +18,7 @@ RUN \
         openssh-server \
         nmap \
         sudo \
+        which \
         https://downloads.percona.com/downloads/Percona-XtraBackup-2.4/Percona-XtraBackup-2.4.26/binary/redhat/7/x86_64/percona-xtrabackup-24-2.4.26-1.el7.x86_64.rpm ; \
     yum clean all ; \
     rm -rf /var/cache/yum ; rm -rf /var/tmp/yum-*
@@ -46,6 +47,8 @@ RUN \
 # Install/start MySQL
 ADD my-master-legacy.cnf /etc/my.cnf
 
+RUN curl https://copr.fedorainfracloud.org/coprs/jsynacek/systemd-backports-for-centos-7/repo/epel-7/jsynacek-systemd-backports-for-centos-7-epel-7.repo > /etc/yum.repos.d/jsynacek-systemd-centos-7.repo ; \
+    yum -y update systemd
 RUN systemctl set-default multi-user.target
 RUN systemctl mask dev-hugepages.mount sys-fs-fuse-connections.mount
 
